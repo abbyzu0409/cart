@@ -1,0 +1,109 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" href="/stylesheets/new.css">
+
+<div class="col-md-8 col-md-offset-2 step-container">
+	<div class="col-md-3 step">選擇商品</div>
+    <div class="col-md-3 step next">訂單明細</div>
+    <div class="col-md-3 step next">確認訂單</div>
+    <div class="col-md-3 step end">結帳</div>
+</div>
+<div class="col-md-12">
+    <div class="thumbnail">
+        <div class="col-md-12">
+            <h2><%= data[0].class %></h2>
+        </div>
+        <%var menu_class = data[0].class;
+        
+        for(var i=0; i<data.length; i++) {
+            if(data[i].class != menu_class){
+                menu_class = data[i].class;%>
+                </div>
+                <div class="thumbnail">
+                    <div class="col-md-12">
+                        <h2><%= data[i].class %></h2>
+                    </div>
+                    <a id="order_link">
+                        <div class="col-md-8 col-sm-6 col-xs-6 text-left product"><span id="product_name"><%= data[i].product %></span></div>
+                        <div class="col-md-4 col-sm-6 col-xs-6 text-right price">$<%= data[i].price %></div>
+                    </a><br>
+            <%}
+            else{%>
+                <a id="order_link">
+                    <div class="col-md-8 col-sm-6 col-xs-6 text-left product"><span id="product_name"><%= data[i].product %></span></div>
+                    <div class="col-md-4 col-sm-6 col-xs-6 text-right price">$<%= data[i].price %></div>
+                </a><br>
+            <%}
+        }
+        %>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <p><a class="btn" href="/orderInfo/cart">購物車/結帳</a></p>
+</div>
+
+<div id="lightbox" class="col-md-12 modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <form name="orderInfo" action="/orderInfo/new" method="post">
+            <h2><span id="show_name"></span></h2>
+            <input type="hidden" name="product" value="">
+            <hr>
+            <div class="form-group">
+                <h3>甜度選擇</h3>
+                <div data-toggle="buttons">
+                    <label class="btn select"><input type="radio" name="sugar" value="無糖">無糖</label>
+                    <label class="btn select"><input type="radio" name="sugar" value="一分糖">一分糖</label>
+                    <label class="btn select"><input type="radio" name="sugar" value="二分糖">二分糖</label>
+                    <label class="btn select"><input type="radio" name="sugar" value="微糖">微糖</label>
+                    <label class="btn select active"><input type="radio" name="sugar" value="半糖" checked="checked">半糖</label>
+                    <label class="btn select"><input type="radio" name="sugar" value="少糖">少糖</label>
+                    <label class="btn select"><input type="radio" name="sugar" value="正常糖">正常糖</label>
+                </div>
+                <h3>冰量選擇</h3>
+                <div data-toggle="buttons">
+                    <label class="btn select"><input type="radio" name="ice" value="無冰">無冰</label>
+                    <label class="btn select"><input type="radio" name="ice" value="微冰">微冰</label>
+                    <label class="btn select"><input type="radio" name="ice" value="少冰">少冰</label>
+                    <label class="btn select active"><input type="radio" name="ice" value="正常冰" checked="checked">正常冰</label>
+                    <label class="btn select"><input type="radio" name="ice" value="常溫">常溫</label>
+                    <label class="btn select"><input type="radio" name="ice" value="溫">溫</label>
+                    <label class="btn select"><input type="radio" name="ice" value="熱">熱</label>
+                </div>
+                <h3 style="display:inline">數量</h3>
+                <input type="number" class="form-control" name="quantity" value=1  min=1>
+            </div>
+            <hr>
+            <button class="btn em" type="submit">加入購物車</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    //lightbox
+    var span = document.getElementsByClassName("close")[0];
+
+    for(var i=0; i<order_link.length; i++){
+        order_link[i].onclick = (function(i) {
+            return function(){
+                lightbox.style.display = "block";
+                show_name.innerHTML = product_name[i].innerText;
+                orderInfo.product.value = product_name[i].innerText;
+            }
+        })(i);
+    }
+
+    span.onclick = function() {
+        lightbox.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == lightbox) {
+            lightbox.style.display = "none";
+        }
+    }
+</script>
+
+<% include ../partials/footer %>

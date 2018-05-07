@@ -1,0 +1,8 @@
+.carousel-inner{
+    height: 450px;
+}
+
+.left.carousel-control,
+.right.carousel-control{
+    border: none;
+}

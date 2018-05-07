@@ -1,0 +1,50 @@
+<% include ./partials/header %> 
+
+<link rel="stylesheet" href="/stylesheets/login-register.css">
+    
+<div class="col-md-6 col-md-offset-3">
+    <div class="col-md-12 thumbnail">
+        <h2>會員登入</h2>
+        <p><span id="error"></span></p>
+
+        <form name="login" action="/login" onsubmit="return validate()" method="post">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input type="text" id="loginInfo" class="form-control" name="username" placeholder="ID">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                <input type="password" id="loginInfo" class="form-control" name="password" placeholder="PASSWORD">
+            </div>
+            <button class="btn em" type="submit">登入</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function validate(){
+        var invalid = false;
+
+        //去除空白
+        for (var i=0; i<login.loginInfo.length; i++){
+            login.loginInfo[i].value = login.loginInfo[i].value.replace(/\s+/g,"");
+        }
+
+        for (var i=0; i<login.loginInfo.length; i++){
+            if (login.loginInfo[i].value.length == 0){
+                login.loginInfo[i].style.border="1px solid #FF99AA";
+                login.loginInfo[i].focus();
+                invalid = true;
+            }
+            else
+                login.loginInfo[i].style.border="1px solid #ccc";
+        }
+
+        if (invalid){
+            error.innerHTML = "所有欄位皆需填寫";
+            return false;
+        }
+    }
+</script>
+
+<% include ./partials/footer %>

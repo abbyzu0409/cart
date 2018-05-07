@@ -1,0 +1,41 @@
+h3{
+    margin: 10px 10px 0px 0px;
+}
+
+a:hover .product,
+a:hover .price{
+    background-color: #f8f8f8;
+}
+
+.thumbnail{
+    vertical-align: top;
+    width: 300px;
+    margin: 20px 10px 20px 0px;
+    display: inline-block;
+    padding: 20px;
+}
+    .product{
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .price{
+        padding-top: 10px;
+        padding-bottom: 10px; 
+    }
+
+.form-control{
+    margin-top: 20px;
+    display: inline;
+    width: 130px;
+    text-align: center;
+}
+
+.form-group{
+    text-align: left;
+}
+
+/*lightbox*/
+.modal-content {
+    margin: 5% auto;
+}

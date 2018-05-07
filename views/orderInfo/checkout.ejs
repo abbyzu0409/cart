@@ -1,0 +1,116 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" href="/stylesheets/cart.css">
+<link rel="stylesheet" href="/stylesheets/checkout.css">
+
+<div class="col-md-8 col-md-offset-2 step-container">
+	<div class="col-md-3 step firstpass">選擇商品</div>
+    <div class="col-md-3 step pass">訂單明細</div>
+    <div class="col-md-3 step active">確認訂單</div>
+    <div class="col-md-3 step end">結帳</div>
+</div>
+
+<div style="margin-top: 20px; margin-bottom: 20px;" class="col-md-12">
+    <div class="thumbnail">
+        <div class="col-md-12">
+            <h2 style="padding-bottom: 20px;">購買清單</h2>
+        </div>
+        
+        <div class="col-md-12">
+            <span class="thumbnail product"><b>產品名稱</b></span>
+            <span class="thumbnail detail"><b>甜度</b></span>
+            <span class="thumbnail detail"><b>冰量</b></span>
+            <span class="thumbnail detail"><b>單價</b></span>
+            <span class="thumbnail detail"><b>數量</b></span>
+            <span class="thumbnail detail"><b>小計</b></span>
+            <hr style="width: 90%;">
+        </div>
+
+        <div class="col-md-12">
+            <% for(var i=0; i<data.length; i++) { %>
+                <span class="thumbnail product" id="product_name"><%= data[i].product %></span>
+                <span class="thumbnail detail"><%= data[i].sugar %></span>
+                <span class="thumbnail detail"><%= data[i].ice %></span>
+                <span class="thumbnail detail"><%= data[i].price %></span>
+                <span class="thumbnail detail" id="product_quantity"><%= data[i].quantity %></span>
+                <span id="subtotal" class="thumbnail detail"><%= data[i].price*data[i].quantity %></span>
+                <hr style="width: 90%;">
+            <%} %>
+        </div>  
+
+        <div class="col-md-12">
+            <h4><span id="total">總計：0</span></h4>
+            <a class="btn" href="/orderInfo/new">繼續購物</a>
+            <a class="btn" href="/orderInfo/cart">修改購物車</a>
+        </div> 
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="thumbnail orderInfo">
+        <h2>訂購資訊</h2>
+        <p><span id="error"></span></p>
+
+        <form name="checkout" action="/orderInfo" onsubmit="return validate()" method="post">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input type="text" id="checkoutInfo" class="form-control" name="name" placeholder="NAME">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                <input type="text" id="checkoutInfo" class="form-control" name="phone" placeholder="PHONE">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <input type="datetime-local" id="checkoutInfo" class="form-control" name="takeaway_datetime" placeholder="DATE">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                <input type="text" id="checkoutInfo" class="form-control" name="address" placeholder="ADDRESS">
+            </div>
+
+            <button class="btn em">結帳</button>
+        </form>
+    </div>
+</div>
+
+<script>
+var sum=0;
+
+if(product_name.length>1){
+    for(var i=0; i<product_name.length; i++){
+        sum = sum + parseInt(subtotal[i].innerText);
+    }
+    total.innerHTML = "總計：" + sum;
+}else
+    total.innerHTML = "總計：" + subtotal.innerText;
+    
+function validate(){
+    var invalid = false;
+
+    //去除空白
+    for (var i=0; i<checkout.checkoutInfo.length; i++){
+        checkout.checkoutInfo[i].value = checkout.checkoutInfo[i].value.replace(/\s+/g,"");
+    }
+
+    for (var i=0; i<checkout.checkoutInfo.length; i++){
+        if (checkout.checkoutInfo[i].value.length == 0){
+            checkout.checkoutInfo[i].style.border="1px solid #FF99AA";
+            checkout.checkoutInfo[i].focus();
+            invalid = true;
+        }
+        else
+            checkout.checkoutInfo[i].style.border="1px solid #ccc";
+    }
+
+    if (invalid){
+        error.innerHTML = "所有欄位皆需填寫";
+        return false;
+    }else if (total.innerHTML == "總計：0"){
+        error.innerHTML = "請至少購買一件商品";
+        return false;
+    }
+}
+</script>
+
+<% include ../partials/footer %>

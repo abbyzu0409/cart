@@ -1,0 +1,60 @@
+<% include ./partials/header %> 
+
+<link rel="stylesheet" href="/stylesheets/login-register.css">
+
+<div class="col-md-6 col-md-offset-3">
+    <div class="col-md-12 thumbnail">
+        <h2>會員註冊</h2>
+        <p><span id="error"></span></p>
+
+        <form name="register" action="/register" onsubmit="return validate()" method="post">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                <input type="text" id="registerInfo" class="form-control" name="username" placeholder="ID">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                <input type="text" id="registerInfo" class="form-control" name="email" placeholder="EMAIL">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                <input type="password" id="registerInfo" class="form-control" name="password" placeholder="PASSWORD">
+            </div>
+            <button class="btn em" type="submit">註冊</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function validate(){
+        var invalid = false;
+
+        //去除空白
+        for (var i=0; i<register.registerInfo.length; i++){
+            register.registerInfo[i].value = register.registerInfo[i].value.replace(/\s+/g,"");
+        }
+
+        for (var i=0; i<register.registerInfo.length; i++){
+            if (register.registerInfo[i].value.length == 0){
+                register.registerInfo[i].style.border="1px solid #FF99AA";
+                register.registerInfo[i].focus();
+                invalid = true;
+            }
+            else
+                register.registerInfo[i].style.border="1px solid #ccc";
+        }
+
+        if (invalid){
+            error.innerHTML = "所有欄位皆需填寫";
+            return false;
+        }else if (register.registerInfo[1].value.match(/^[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*@[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*\.+[a-zA-Z]+$/))
+            return true;
+        else{
+            error.innerHTML = "電子信箱格式錯誤";
+            register.registerInfo[1].focus();
+            return false;
+        }
+    }
+</script>
+
+<% include ./partials/footer %>

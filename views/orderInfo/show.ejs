@@ -1,0 +1,62 @@
+<% include ../partials/header %>
+
+<link rel="stylesheet" href="/stylesheets/cart.css">
+<link rel="stylesheet" href="/stylesheets/show.css">
+
+<div class="col-md-12">
+    <div class="thumbnail">
+        <div class="col-md-12">
+            <h2>訂單內容</h2>
+        </div>
+        
+        <div class="col-md-12">
+            <div class="col-md-12 order-detail">
+                <p>訂單編號：<%= data[0].id %></p>
+                <p>訂購日期：<%= data[0].date %></p>
+                <p>購買人：<%= data[0].name %></p>
+                <p>電話：<%= data[0].phone %></p>
+                <p>外送時間：<%= data[0].takeaway_datetime %></p>
+                <p>外送地址：<%= data[0].takeaway_address %></p>
+            </div>
+            <span class="thumbnail product"><b>產品名稱</b></span>
+            <span class="thumbnail detail"><b>甜度</b></span>
+            <span class="thumbnail detail"><b>冰量</b></span>
+            <span class="thumbnail detail"><b>單價</b></span>
+            <span class="thumbnail detail"><b>數量</b></span>
+            <span class="thumbnail detail"><b>小計</b></span>
+            <hr style="width: 90%;">
+        </div>
+
+        <div class="col-md-12">
+            <% for(var i=0; i<data.length; i++) { %>
+                <span class="thumbnail product" id="product_name"><%= data[i].product %></span>
+                <span class="thumbnail detail"><%= data[i].sugar %></span>
+                <span class="thumbnail detail"><%= data[i].ice %></span>
+                <span class="thumbnail detail"><%= data[i].price %></span>
+                <span class="thumbnail detail" id="product_quantity"><%= data[i].quantity %></span>
+                <span id="subtotal" class="thumbnail detail"><%= data[i].price*data[i].quantity %></span>
+                <hr style="width: 90%;">
+            <%} %>
+        </div>
+        <div class="col-md-12">
+            <h4><span id="total">金額：0</span></h4>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <a class="btn" href="/orderInfo">返回</a>
+</div>
+
+<script>
+    var sum=0;
+
+    if(subtotal.length>1){
+        for(var i=0; i<subtotal.length; i++){
+            sum = sum + parseInt(subtotal[i].innerText);
+        }
+        total.innerHTML = "金額：" + sum;
+    }else
+        total.innerHTML = "金額：" + subtotal.innerText;
+</script>
+
+<% include ../partials/footer %>

@@ -1,0 +1,76 @@
+h3{
+    margin: 10px 10px 0px 0px;
+}
+
+hr{
+    margin: 0 auto;
+}
+
+form{
+    display: inline;
+}
+
+.thumbnail{
+    margin: 20px 0px 20px 0px;
+    display: inline-block;
+    padding: 20px;
+    width: 750px;
+    margin: 0 auto;
+}
+
+    .product {
+        margin: 0 auto;
+        padding: 10px 0px 10px 10px;
+        width: 130px;
+        text-align: left;
+        border: 0px;
+    }
+
+    .detail {
+        margin: 0 auto;
+        padding: 10px 0px 10px 0px;
+        width: 80px;
+        text-align: center;
+        border: 0px;
+    }
+
+    .glyphicon.glyphicon-pencil,
+    .glyphicon.glyphicon-remove{
+        padding: 10px 0px 10px 0px;
+        margin: 0 auto;
+    }
+
+#total{
+    text-align: right;
+}
+
+.form-group{
+    text-align: left;
+}
+
+.form-control{
+    margin-top: 20px;
+    display: inline;
+    width: 130px;
+    text-align: center;
+}
+
+
+/*btn*/
+.btn.remove{
+    margin: 0 auto;
+    padding: 0px;
+    width: 0px;
+    border: none;
+    color: #888;
+}
+
+.btn.remove:hover{
+    color: #FF7C92;
+    background-color: #fff;
+}
+
+/*lightbox*/
+.modal-content {
+    margin: 5% auto;
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PLSHOP</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/stylesheets/header.css">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div class="row top-nav">
+                <div class="container">
+                    <div class="col-md-12">
+                        <ul class="nav navbar-nav navbar-right">
+                            <% if(!currentUser){ %>
+                                <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 註冊</a></li>
+                                <li><a href="/login"><span class="glyphicon glyphicon-lock"></span> 登入</a></li>                        
+                            <% } else { %>
+                                <li><a href="/orderInfo">訂單查詢</a></li>
+                                <li><a href="/member"><span class="glyphicon glyphicon-user"></span> <%= currentUser.username %></a></li>
+                                <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> 登出</a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row top-nav">
+                <!--md-->
+                <div id="sticky-nav" class="col-md-12 down-nav">
+                    <div class="container">
+                        <ul class="nav navbar-nav navbar-down-menu">
+                                <li><a class="navbar-brand" href="/">PLSHOP</a></li>
+                                <li><a href="/aboutus">關於我們</a></li>
+                                <li><a href="/ingredient">嚴選食材</a></li>
+                                <li><a href="/orderInfo/new">訂購</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <% if(!currentUser){ %>                            
+                                <li><a href="/orderInfo/cart"><span class="glyphicon glyphicon-shopping-cart"></span> 購物車</a></li>
+                                <li><a href="/orderInfo/checkout">快速結帳</a></li>
+                                <li><a href="/register"><span class="glyphicon glyphicon-user"></span> 註冊</a></li>
+                                <li><a href="/login"><span class="glyphicon glyphicon-lock"></span> 登入</a></li>                        
+                            <% } else { %>
+                                <li><a href="/orderInfo/cart"><span class="glyphicon glyphicon-shopping-cart"></span> 購物車</a></li>
+                                <li><a href="/orderInfo/checkout">快速結帳</a></li>
+                                <li><a href="/orderInfo">訂單查詢</a></li>
+                                <li><a href="/member"><span class="glyphicon glyphicon-user"></span> <%= currentUser.username %></a></li>
+                                <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> 登出</a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+                <!--sm-->
+                <!--xs-->
+            </div>
+
+            <div class="container">
+                <div id="wrapper-header" class="row">
+                    <!--md-->
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="/"><h1>PLSHOP</h1></a>
+                            </div>
+                            <div id="nav" class="col-md-12 top-menu">
+                                <ul class="nav navbar-nav navbar-top-menu" >
+                                    <li><a href="/aboutus">關於我們</a></li>
+                                    <li><a href="/ingredient">嚴選食材</a></li>
+                                    <li><a href="/orderInfo/new">訂購</a></li>
+                                    <li><a href="/orderInfo/cart">購物車</a></li>
+                                    <li><a href="/orderInfo/checkout">快速結帳</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!--sm-->
+                    <!--xs-->
+                </div>
+
+                <div id="wrapper-content" class="row">
+                    <div class="col-md-12">
+                        <% if(error && error.length > 0) { %>
+                            <div class="alert alert-danger"><p><%= error %></p></div>
+                        <% } %>
+                        
+                        <% if(success && success.length > 0) { %>
+                            <div class="alert alert-success"><p><%= success %></p></div>
+                        <% } %>
+                    </div>
+
+    <script>
+        var sticky = nav.offsetTop;
+
+        window.onscroll = function() {
+            myFunction();
+        };
+        
+        function myFunction() {
+            if (window.pageYOffset >= sticky) {
+                document.getElementById("sticky-nav").classList.add("sticky");
+                document.getElementById("sticky-nav").style.display="block";
+            }
+            else {
+                document.getElementById("sticky-nav").classList.remove("sticky");
+                document.getElementById("sticky-nav").style.display="none";
+            }
+        }
+    </script>
+
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
