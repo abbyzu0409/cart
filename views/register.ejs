@@ -47,9 +47,7 @@
         if (invalid){
             error.innerHTML = "所有欄位皆需填寫";
             return false;
-        }else if (register.registerInfo[1].value.match(/^[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*@[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*\.+[a-zA-Z]+$/))
-            return true;
-        else{
+        }else if (!register.registerInfo[1].value.match(/^[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*@[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*\.+[a-zA-Z]+$/)){
             error.innerHTML = "電子信箱格式錯誤";
             register.registerInfo[1].focus();
             return false;

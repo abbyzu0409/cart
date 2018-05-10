@@ -1,3 +1,5 @@
+const PORT = process.env.PORT || 3000;
+
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
@@ -11,8 +13,6 @@ var db = new sqlite3.Database("cart");
 
 var orderInfoRoute = require("./routes/orderInfo");
 var indexRoute = require("./routes/index");
-
-const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
@@ -41,7 +41,10 @@ db.serialize(function() {
               "sugar TEXT, " + 
               "ice TEXT, " + 
               "quantity INTEGER, " +
-              "FOREIGN KEY (product) REFERENCES menu(product))");
+              "author TEXT, " +
+              "PRIMARY KEY (product, sugar, ice, author), " + 
+              "FOREIGN KEY (product) REFERENCES menu(product), " + 
+              "FOREIGN KEY (author) REFERENCES user(username))");
 
   db.run("CREATE TABLE IF NOT EXISTS menu (" + 
               "product TEXT PRIMARY KEY, " + 

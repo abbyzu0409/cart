@@ -61,14 +61,7 @@ router.get("/logout", function(req, res){
    res.redirect("/");
 });
 
-router.post("/forget", function(req, res){
-    var username = req.body.forget_username;
-    var username = req.body.forget_email;
-    req.flash("success", "已將帳戶資訊送至信箱");
-    res.redirect("/login");
-});
-
-router.get("/member", middleware.checkOrderOwner, function(req, res){
+router.get("/member", middleware.isLoggedIn, function(req, res){
     db.serialize(function() {
         db.all("SELECT * FROM user WHERE username=?", req.user.username,  
         function(err, rows){
@@ -80,7 +73,7 @@ router.get("/member", middleware.checkOrderOwner, function(req, res){
     });
 });
 
-router.put("/member", middleware.checkOrderOwner, function(req, res){
+router.put("/member", function(req, res){
     db.serialize(function() {
          db.run("UPDATE user SET email=?, password=? WHERE username=?", req.body.email, req.body.password, req.user.username,
          function(err){

@@ -41,15 +41,13 @@
                 invalid = true;
             }
             else
-            member.memberInfo[i].style.border="1px solid #ccc";
+                member.memberInfo[i].style.border="1px solid #ccc";
         }
         
         if (invalid){
             error.innerHTML = "所有欄位皆需填寫";
             return false;
-        }else if (member.memberInfo[0].value.match(/^[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*@[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*\.+[a-zA-Z]+$/))
-            return true;
-        else{
+        }else if (!member.memberInfo[0].value.match(/^[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*@[0-9a-zA-Z]([-._]*[0-9a-zA-Z])*\.+[a-zA-Z]+$/)){
             error.innerHTML = "電子信箱格式錯誤";
             member.memberInfo[0].focus();
             return false;

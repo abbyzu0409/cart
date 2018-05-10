@@ -67,7 +67,7 @@
             <input type="hidden" name="product" value="">
             <hr>
             <div class="form-group">
-                <h3>甜度選擇</h3>
+                <h3>甜度</h3>
                 <div data-toggle="buttons">
                     <label id="lbsugar" class="btn select"><input type="radio" name="sugar" value="無糖">無糖</label>
                     <label id="lbsugar" class="btn select"><input type="radio" name="sugar" value="一分糖">一分糖</label>
@@ -77,7 +77,7 @@
                     <label id="lbsugar" class="btn select"><input type="radio" name="sugar" value="少糖">少糖</label>
                     <label id="lbsugar" class="btn select"><input type="radio" name="sugar" value="正常糖">正常糖</label>
                 </div>
-                <h3>冰量選擇</h3>
+                <h3>冰量</h3>
                 <div data-toggle="buttons">
                     <label id="lbice" class="btn select"><input type="radio" name="ice" value="無冰">無冰</label>
                     <label id="lbice" class="btn select"><input type="radio" name="ice" value="微冰">微冰</label>
@@ -88,6 +88,8 @@
                     <label id="lbice" class="btn select"><input type="radio" name="ice" value="熱">熱</label>
                 </div>
                 <h3 style="display:inline;">數量</h3>
+                <input type="hidden" name="old_sugar" value="">
+                <input type="hidden" name="old_ice" value="">
                 <input class="form-control" type="number" name="quantity" value=1  min=1>
             </div>
             <hr style="margin-bottom: 10px; margin-top: 10px;">
@@ -124,6 +126,8 @@
                     lightbox.style.display = "block";
                     show_name.innerHTML = product_name[i].innerText;
                     orderInfo.product.value = product_name[i].innerText;
+                    orderInfo.old_sugar.value = product_sugar[i].innerText;
+                    orderInfo.old_ice.value = product_ice[i].innerText;
                     orderInfo.quantity.value = product_quantity[i].innerText;
 
                     for(var j=0; j<orderInfo.sugar.length; j++){
@@ -151,6 +155,8 @@
             lightbox.style.display = "block";
             show_name.innerHTML = product_name.innerText;
             orderInfo.product.value = product_name.innerText;
+            orderInfo.old_sugar.value = product_sugar.innerText;
+            orderInfo.old_ice.value = product_ice.innerText;
             orderInfo.quantity.value = product_quantity.innerText;
             
             for(var j=0; j<orderInfo.sugar.length; j++){

@@ -8,7 +8,7 @@ var db = new sqlite3.Database("cart");
 
 router.get("/", middleware.isLoggedIn, function(req, res){
     db.serialize(function() {
-        db.all("SELECT * FROM orderInfo GROUP BY id ORDER BY date DESC",  
+        db.all("SELECT * FROM orderInfo WHERE author=? GROUP BY id ORDER BY date DESC", req.user.username,  
         function(err, rows){
             if (err)
                 console.log(err);
@@ -18,32 +18,33 @@ router.get("/", middleware.isLoggedIn, function(req, res){
     });
 });
 
-router.post("/", middleware.isLoggedIn, function(req, res){
+router.post("/", function(req, res){
     var date = moment().format('YYYY-MM-DD hh:mm:ss');
     var name = req.body.name;
     var phone = req.body.phone;
     var takeaway_datetime = moment(req.body.takeaway_datetime).format('YYYY-MM-DD hh:mm:ss');
     var takeaway_address = req.body.address;
-    var total = req.body.order_total;
-    var author = req.user.username;
     var id = 0;
 
     db.serialize(function() {
-        db.all("SELECT *, sum(quantity) as quantity, (SELECT max(id) as id FROM orderInfo) as id " + 
+        db.all("SELECT *, (SELECT max(id) as id FROM orderInfo) as id " + 
                 "FROM cart, menu " +
-                "WHERE cart.product=menu.product " +
-                "GROUP BY cart.product, cart.sugar, cart.ice " + 
-                "ORDER BY menu.class ", 
+                "WHERE cart.product=menu.product and author=?" +
+                "ORDER BY menu.class ", req.user.username,
         function(err, rows){
             if (!err){
                 id = rows[0].id;
                 id++; //訂單編號增加
 
+                //將購物車內容新增至訂單資料表
                 for(var i=0; i<rows.length; i++){
                     db.run("INSERT INTO orderInfo VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                    id, date, name, phone, takeaway_datetime, takeaway_address, rows[i].product, rows[i].sugar, rows[i].ice, rows[i].price, rows[i].quantity, author);
+                                id, date, name, phone, takeaway_datetime, takeaway_address, rows[i].product, rows[i].sugar, rows[i].ice, rows[i].price, rows[i].quantity, rows[i].author);
                 }
-                db.run("DELETE FROM cart", function(err){
+
+                //結帳後 清空購物車
+                db.run("DELETE FROM cart WHERE author=?", req.user.username,
+                function(err){
                     if (err)
                         req.flash("error", "結帳失敗");
                     else
@@ -67,26 +68,45 @@ router.get("/new", middleware.isLoggedIn, function(req, res){
      });
 });
 
-router.post("/new", middleware.isLoggedIn, function(req, res){
+router.post("/new", function(req, res){
     db.serialize(function() {
-        db.run("INSERT INTO cart VALUES (?,?,?,?)", req.body.product, req.body.sugar, req.body.ice, req.body.quantity, 
-        function(err){
-            if (err)
-                req.flash("error", "加入購物車失敗");
-            else
-                req.flash("success","加入購物車成功");
-            res.redirect("new");
+        //查詢購物車內是否已有相同飲料
+        db.all("SELECT * FROM cart WHERE product=? and sugar=? and ice=? and author=?", req.body.product, req.body.sugar, req.body.ice, req.user.username,
+        function(err, rows){
+            if(!err){
+                if (rows.length!=0){
+                    //點過相同飲料 更新飲料數量
+                    db.run("UPDATE cart SET quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
+                        parseInt(rows[0].quantity) + parseInt(req.body.quantity), req.body.product, req.body.sugar, req.body.ice, req.user.username,
+                    function(err){
+                        if (err)
+                            req.flash("error", "加入購物車失敗");
+                        else
+                            req.flash("success","加入購物車成功");
+                        res.redirect("new");
+                    });
+                }else{
+                    //未點過相同飲料 新增資料
+                    db.run("INSERT INTO cart VALUES (?,?,?,?,?)", req.body.product, req.body.sugar, req.body.ice, req.body.quantity, req.user.username,
+                    function(err){
+                        if (err)
+                            req.flash("error", "加入購物車失敗");
+                        else
+                            req.flash("success","加入購物車成功");
+                        res.redirect("new");
+                    });
+                }
+            }
         });
     });
 });
 
 router.get("/cart", middleware.isLoggedIn, function(req, res){
     db.serialize(function() {
-        db.all("SELECT *, sum(quantity) as quantity " + 
+        db.all("SELECT * " + 
                 "FROM cart, menu " +
-                "WHERE cart.product=menu.product " + 
-                "GROUP BY cart.product, cart.sugar, cart.ice " + 
-                "ORDER BY menu.class ", 
+                "WHERE cart.product=menu.product and author=?" + 
+                "ORDER BY menu.class ", req.user.username,
          function(err, rows){
              if (err)
                  console.log(err);
@@ -96,9 +116,9 @@ router.get("/cart", middleware.isLoggedIn, function(req, res){
      });
 });
 
-router.delete("/cart_detail", middleware.checkOrderOwner, function(req, res){
+router.delete("/cart_detail", function(req, res){
     db.serialize(function() {
-      db.run("DELETE FROM cart WHERE product=? and sugar=? and ice=?", req.body.product, req.body.sugar, req.body.ice, 
+      db.run("DELETE FROM cart WHERE product=? and sugar=? and ice=? and author=?", req.body.product, req.body.sugar, req.body.ice, req.user.username,
       function(err){
             if (err)
                 req.flash("error", "刪除失敗");
@@ -109,9 +129,10 @@ router.delete("/cart_detail", middleware.checkOrderOwner, function(req, res){
     });
 });
 
-router.delete("/cart", middleware.checkOrderOwner, function(req, res){
+router.delete("/cart", function(req, res){
     db.serialize(function() {
-        db.run("DELETE FROM cart", function(err){
+        db.run("DELETE FROM cart WHERE author=?", req.user.username, 
+        function(err){
             if (err)
                 req.flash("error", "購物車清空失敗");
             else
@@ -121,26 +142,49 @@ router.delete("/cart", middleware.checkOrderOwner, function(req, res){
     });
 });
 
-router.put("/cart", middleware.checkOrderOwner, function(req, res){
+router.put("/cart", function(req, res){
     db.serialize(function() {
-         db.run("UPDATE cart SET sugar=?, ice=?, quantity=? WHERE product=?", req.body.sugar, req.body.ice, req.body.quantity, req.body.product,
-         function(err){
-            if (err)
-                req.flash("error", "更新購物車失敗")
-            else
-                req.flash("success","更新購物車成功");
-            res.redirect("cart");
+        //查詢購物車內是否已有相同飲料
+        db.all("SELECT * FROM cart WHERE product=? and sugar=? and ice=? and author=?", req.body.product, req.body.sugar, req.body.ice, req.user.username,
+        function(err, rows){
+            if(!err){
+                if (rows.length!=0){
+                    //修改後 原已點過的飲料 刪除舊資料 更新飲料數量
+                    db.run("DELETE FROM cart WHERE product=? and sugar=? and ice=? and author=?",  
+                        req.body.product, req.body.old_sugar, req.body.old_ice, req.user.username);
+                    db.run("UPDATE cart SET quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
+                        parseInt(rows[0].quantity) + parseInt(req.body.quantity), req.body.product, req.body.sugar, req.body.ice, req.user.username,
+                        function(err){
+                            if (err)
+                                req.flash("error", "更新購物車失敗");
+                            else
+                                req.flash("success","更新購物車成功");
+                            res.redirect("cart");
+                        });
+                }
+                else{
+                    //修改後 未點過的飲料 更新舊資料
+                    db.run("UPDATE cart SET sugar=?, ice=?, quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
+                            req.body.sugar, req.body.ice, req.body.quantity, req.body.product, req.body.old_sugar, req.body.old_ice, req.user.username,
+                    function(err){
+                        if (err)
+                            req.flash("error", "更新購物車失敗");
+                        else
+                            req.flash("success","更新購物車成功");
+                        res.redirect("cart");
+                    });
+                }
+            }
         });
      });
  });
 
-router.get("/checkout", middleware.checkOrderOwner, function(req, res){
+router.get("/checkout", middleware.isLoggedIn, function(req, res){
     db.serialize(function() {
-        db.all("SELECT *, sum(quantity) as quantity " + 
+        db.all("SELECT * " + 
                 "FROM cart, menu " +
-                "WHERE cart.product=menu.product " + 
-                "GROUP BY cart.product, cart.sugar, cart.ice " + 
-                "ORDER BY menu.class ", 
+                "WHERE cart.product=menu.product and author=?" + 
+                "ORDER BY menu.class ", req.user.username,
          function(err, rows){
              if (err)
                  console.log(err);
@@ -150,7 +194,7 @@ router.get("/checkout", middleware.checkOrderOwner, function(req, res){
      });
 });
 
-router.get("/:id", function(req, res){
+router.get("/:id", middleware.checkOrderOwner, function(req, res){
    db.serialize(function() {
        db.all("SELECT * FROM orderInfo WHERE id=?", req.params.id, 
         function(err, rows){
