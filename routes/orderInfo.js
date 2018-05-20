@@ -147,23 +147,33 @@ router.put("/cart", function(req, res){
         //查詢購物車內是否已有相同飲料
         db.all("SELECT * FROM cart WHERE product=? and sugar=? and ice=? and author=?", req.body.product, req.body.sugar, req.body.ice, req.user.username,
         function(err, rows){
-            if(!err){
-                if (rows.length!=0){
-                    //修改後 原已點過的飲料 刪除舊資料 更新飲料數量
+            if(!err){                
+                if (rows.length!=0 && req.body.old_sugar != req.body.sugar && req.body.old_ice != req.body.ice){
+                    //更新後的飲料與舊飲料不同 且 更新後的飲料已點過 刪除舊飲料 更新已點過的飲料數量
                     db.run("DELETE FROM cart WHERE product=? and sugar=? and ice=? and author=?",  
                         req.body.product, req.body.old_sugar, req.body.old_ice, req.user.username);
                     db.run("UPDATE cart SET quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
                         parseInt(rows[0].quantity) + parseInt(req.body.quantity), req.body.product, req.body.sugar, req.body.ice, req.user.username,
-                        function(err){
-                            if (err)
-                                req.flash("error", "更新購物車失敗");
-                            else
-                                req.flash("success","更新購物車成功");
-                            res.redirect("cart");
-                        });
-                }
-                else{
-                    //修改後 未點過的飲料 更新舊資料
+                    function(err){
+                        if (err)
+                            req.flash("error", "更新購物車失敗");
+                        else
+                            req.flash("success","更新購物車成功");
+                        res.redirect("cart");
+                    });
+                }else if(rows.length!=0 && req.body.old_sugar == req.body.sugar && req.body.old_ice == req.body.ice){
+                    //僅更新飲料數量 甜度冰塊不變
+                    db.run("UPDATE cart SET quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
+                        req.body.quantity, req.body.product, req.body.sugar, req.body.ice, req.user.username,
+                    function(err){
+                        if (err)
+                            req.flash("error", "更新購物車失敗");
+                        else
+                            req.flash("success","更新購物車成功");
+                        res.redirect("cart");
+                    });
+                }else{
+                    //更新後的飲料與舊飲料不同 且 更新後的飲料未點過 更新舊資料
                     db.run("UPDATE cart SET sugar=?, ice=?, quantity=? WHERE product=? and sugar=? and ice=? and author=?", 
                             req.body.sugar, req.body.ice, req.body.quantity, req.body.product, req.body.old_sugar, req.body.old_ice, req.user.username,
                     function(err){
